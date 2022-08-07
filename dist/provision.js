@@ -1,0 +1,25 @@
+import { ImprovBluetoothLE } from "./ble";
+import { IMPROV_BLE_SERVICE } from "./const";
+import "./provision-dialog";
+import { fireEvent } from "./util";
+export const startProvisioning = async (button) => {
+    let device;
+    try {
+        device = await navigator.bluetooth.requestDevice({
+            optionalServices: [IMPROV_BLE_SERVICE],
+            acceptAllDevices: true,
+        });
+    }
+    catch (err) {
+        console.error("Failed to get device", err);
+    }
+    if (!device) {
+        return;
+    }
+    const el = document.createElement("improv-wifi-provision-dialog");
+    el.client = new ImprovBluetoothLE(device, console);
+    el.stateUpdateCallback = (state) => {
+        fireEvent(button, "state-changed", state);
+    };
+    document.body.appendChild(el);
+};

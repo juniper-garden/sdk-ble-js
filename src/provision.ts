@@ -8,7 +8,7 @@ export const startProvisioning = async (button: LaunchButton) => {
   let device: BluetoothDevice | undefined;
   try {
     device = await navigator.bluetooth.requestDevice({
-      optionalServices: [{ services: [IMPROV_BLE_SERVICE] }],
+      optionalServices: [IMPROV_BLE_SERVICE],
       acceptAllDevices: true,
     });
   } catch (err) {
