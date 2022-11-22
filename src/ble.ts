@@ -179,8 +179,21 @@ export class ImprovBluetoothLE extends EventTarget {
     const state = encodedState.getUint8(0) as ImprovCurrentState;
     this.logger.debug("improv current state", state);
     this.currentState = state;
+    if (state === 4) {
+      this.logger.debug('state is successfully provisioned');
+      if (this._rpcFeedback) {
+        this.logger.debug('rpc feedback is not null');
+        const result: ImprovRPCResult = {
+          command: this._rpcFeedback.command,
+          values: [],
+        };
+        this._rpcFeedback.resolve(result);
+        this._rpcFeedback = undefined;
+      }
+    }
     this.dispatchEvent(new CustomEvent("state-change"));
   }
+
 
   private _handleImprovErrorStateChange(encodedState: DataView) {
     const state = encodedState.getUint8(0) as ImprovErrorState;
@@ -209,7 +222,7 @@ export class ImprovBluetoothLE extends EventTarget {
     const baseOffset = 2;
     const decoder = new TextDecoder();
 
-    for (let start = 0; start < dataLength; ) {
+    for (let start = 0; start < dataLength;) {
       const valueLength = encodedResult.getUint8(baseOffset + start);
       const valueBytes = new Uint8Array(valueLength);
       const valueOffset = baseOffset + start + 1;
