@@ -99,12 +99,24 @@ export class ImprovBluetoothLE extends EventTarget {
         const payload = new Uint8Array([command, data.length, ...data, 0]);
         payload[payload.length - 1] = payload.reduce((sum, cur) => sum + cur, 0);
         this.RPCResult = undefined;
-        this._rpcCommandChar.writeValueWithoutResponse(payload);
+        this._rpcCommandChar.writeValue(payload);
     }
     _handleImprovCurrentStateChange(encodedState) {
         const state = encodedState.getUint8(0);
         this.logger.debug("improv current state", state);
         this.currentState = state;
+        if (state === 4) {
+            this.logger.debug('state is successfully provisioned');
+            if (this._rpcFeedback) {
+                this.logger.debug('rpc feedback is not null');
+                const result = {
+                    command: this._rpcFeedback.command,
+                    values: [],
+                };
+                this._rpcFeedback.resolve(result);
+                this._rpcFeedback = undefined;
+            }
+        }
         this.dispatchEvent(new CustomEvent("state-change"));
     }
     _handleImprovErrorStateChange(encodedState) {
