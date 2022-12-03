@@ -8,12 +8,14 @@
   "license": "Apache-2.0",
   "scripts": {
     "prepublishOnly": "script/build",
-    "build:watch": "nodemon --ext ts,js,jsx,tsx --exec ./script/build"
+    "build:watch": "nodemon --watch src/ --ext ts,js,jsx,tsx --exec ./script/build",
+    "start": "http-server"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/web-bluetooth": "^0.0.15",
+    "http-server": "^14.1.1",
     "nodemon": "^2.0.20",
     "prettier": "^2.3.0",
     "rollup": "^2.48.0",
